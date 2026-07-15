@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>Can you be my girlfriend?</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* 第一窗格 */
+        .card {
+            background: white;
+            border-radius: 24px;
+            padding: 30px 25px;
+            width: 90%;
+            max-width: 360px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(255, 105, 180, 0.3);
+            position: relative;
+            z-index: 10;
+        }
+
+        .card-image {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin: 0 auto 20px;
+            border: 4px solid #ff6b9d;
+            box-shadow: 0 8px 25px rgba(255, 107, 157, 0.3);
+        }
+
+        .card-text {
+            font-size: 22px;
+            color: #333;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            font-weight: 500;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            position: relative;
+            height: 50px;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            -webkit-appearance: none;
+            min-width: 100px;
+        }
+
+        .btn-yes {
+            background: linear-gradient(135deg, #ff6b9d, #ff8e53);
+            color: white;
+            box-shadow: 0 4px 15px rgba(255, 107, 157, 0.4);
+        }
+
+        .btn-yes:active {
+            transform: scale(0.95);
+        }
+
+        .btn-no {
+            background: #f0f0f0;
+            color: #666;
+            position: relative;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        /* 第二窗格 - 选项页面 */
+        .option-page {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            z-index: 100;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .option-page.active {
+            display: flex;
+        }
+
+        .option-text {
+            font-size: 24px;
+            color: #fff;
+            font-weight: 700;
+            margin-bottom: 30px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .option-btn {
+            padding: 15px 40px;
+            background: white;
+            color: #ff6b9d;
+            border: none;
+            border-radius: 30px;
+            font-size: 20px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(255, 107, 157, 0.4);
+            transition: transform 0.2s;
+        }
+
+        .option-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* 第三窗格 - 黑屏 */
+        .black-page {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            z-index: 200;
+        }
+
+        .black-page.active {
+            display: block;
+        }
+
+        /* 第四窗格 - 乌龟页面 */
+        .turtle-page {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 50%, #fecfef 100%);
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            z-index: 100;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .turtle-page.active {
+            display: flex;
+        }
+
+        .turtle-emoji {
+            font-size: 80px;
+            margin-bottom: 20px;
+        }
+
+        .turtle-text {
+            font-size: 24px;
+            color: #fff;
+            font-weight: 700;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            line-height: 1.6;
+        }
+
+        /* 隐藏 */
+        .hidden {
+            display: none !important;
+        }
+
+        /* 装饰背景 */
+        .bg-hearts {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .bg-heart {
+            position: absolute;
+            font-size: 20px;
+            opacity: 0.3;
+            animation: float 6s infinite ease-in-out;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-30px) rotate(10deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 背景装饰 -->
+    <div class="bg-hearts" id="bgHearts"></div>
+
+    <!-- 第一窗格 -->
+    <div class="card" id="card1">
+        <img src="/willu.png" 
+             alt="cute" class="card-image" id="mainImage">
+        
+        <div class="card-text" id="mainText">
+            Can u trust me as a Boyfriend？💕
+        </div>
+        
+        <div class="buttons">
+            <button class="btn btn-yes" onclick="goOption()">Yes!❤️</button>
+            <button class="btn btn-no" id="btnNo" 
+                    ontouchstart="moveButton(event)" 
+                    onclick="moveButton(event)">No💔</button>
+        </div>
+    </div>
+
+    <!-- 第二窗格 - 选项页面 -->
+    <div class="option-page" id="optionPage">
+        <div class="option-text">Ready for something?</div>
+        <button class="option-btn" onclick="goBlack()">get ur gift 🎁</button>
+    </div>
+
+    <!-- 第三窗格 - 黑屏 -->
+    <div class="black-page" id="blackPage"></div>
+
+    <!-- 第四窗格 - 乌龟页面 -->
+    <div class="turtle-page" id="turtlePage">
+        <div class="turtle-emoji">🐢</div>
+        <div class="turtle-text">I'll be the turtle~<br>maybe 1 kiss?</div>
+    </div>
+
+    <script>
+        const CONFIG = {
+            image: "willu.png",
+            text: "Can u trust me as a Boyfriend？💕"
+        };
+
+        document.getElementById('mainImage').src = CONFIG.image;
+        document.getElementById('mainText').innerHTML = CONFIG.text;
+
+        const btnNo = document.getElementById('btnNo');
+        const card1 = document.getElementById('card1');
+        const optionPage = document.getElementById('optionPage');
+        const blackPage = document.getElementById('blackPage');
+        const turtlePage = document.getElementById('turtlePage');
+
+        // 生成背景装饰爱心
+        function createBgHearts() {
+            const container = document.getElementById('bgHearts');
+            const hearts = ['💕', '💖', '💗', '💓', '💝'];
+            for (let i = 0; i < 15; i++) {
+                const heart = document.createElement('div');
+                heart.className = 'bg-heart';
+                heart.textContent = hearts[Math.floor(Math.random() * hearts.length)];
+                heart.style.left = Math.random() * 100 + '%';
+                heart.style.top = Math.random() * 100 + '%';
+                heart.style.animationDelay = Math.random() * 6 + 's';
+                heart.style.fontSize = (15 + Math.random() * 20) + 'px';
+                container.appendChild(heart);
+            }
+        }
+        createBgHearts();
+
+        // No 按钮逃跑逻辑
+        function moveButton(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const btnW = btnNo.offsetWidth;
+            const btnH = btnNo.offsetHeight;
+            
+            const maxX = window.innerWidth - btnW - 20;
+            const maxY = window.innerHeight - btnH - 20;
+            const minX = 20;
+            const minY = 20;
+            
+            const newX = Math.random() * (maxX - minX) + minX;
+            const newY = Math.random() * (maxY - minY) + minY;
+            
+            btnNo.style.position = 'fixed';
+            btnNo.style.left = newX + 'px';
+            btnNo.style.top = newY + 'px';
+            btnNo.style.transform = 'none';
+            btnNo.style.zIndex = '1000';
+            
+            const rotation = Math.random() * 20 - 10;
+            btnNo.style.transform = `rotate(${rotation}deg)`;
+        }
+
+        // 进入选项页面
+        function goOption() {
+            card1.classList.add('hidden');
+            optionPage.classList.add('active');
+        }
+
+        // 进入黑屏
+        function goBlack() {
+            optionPage.classList.remove('active');
+            blackPage.classList.add('active');
+            
+            // 黑屏5秒后进入乌龟页面
+            setTimeout(() => {
+                blackPage.classList.remove('active');
+                turtlePage.classList.add('active');
+            }, 5000);
+        }
+
+        // 防止 iOS 双击缩放
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', function(e) {
+            const now = Date.now();
+            if (now - lastTouchEnd <= 300) {
+                e.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, false);
+
+        // 防止页面滚动
+        document.addEventListener('touchmove', function(e) {
+            if (e.target === btnNo || e.target.closest('.buttons')) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+    </script>
+</body>
+</html>
